@@ -36,7 +36,15 @@ export default function LoginPage() {
 
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      router.push('/orders');
+
+      // Redirect based on user type
+      if (data.user.is_platform_admin) {
+        router.push('/admin');
+      } else if (data.user.is_owner) {
+        router.push('/dashboard');
+      } else {
+        router.push('/orders');
+      }
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     } finally {
