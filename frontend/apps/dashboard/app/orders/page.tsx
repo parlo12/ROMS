@@ -22,6 +22,14 @@ interface Order {
   }>;
 }
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  is_platform_admin: boolean;
+  locations?: Array<{ id: number; location_name: string }>;
+}
+
 export default function OrdersPage() {
   const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -29,6 +37,7 @@ export default function OrdersPage() {
   const [error, setError] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState<number | null>(null);
   const [locations, setLocations] = useState<Array<{ id: number; location_name: string }>>([]);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('auth_token');
@@ -37,10 +46,21 @@ export default function OrdersPage() {
       return;
     }
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.locations && user.locations.length > 0) {
-      setLocations(user.locations);
-      setSelectedLocationId(user.locations[0].id);
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
+    setUser(userData);
+
+    // Platform admin should go to admin dashboard
+    if (userData.is_platform_admin) {
+      router.replace('/admin');
+      return;
+    }
+
+    if (userData.locations && userData.locations.length > 0) {
+      setLocations(userData.locations);
+      setSelectedLocationId(userData.locations[0].id);
+    } else {
+      // No locations assigned - stop loading and show message
+      setLoading(false);
     }
   }, [router]);
 
@@ -142,6 +162,31 @@ export default function OrdersPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  // No locations assigned
+  if (locations.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <header className="bg-white shadow">
+          <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 className="text-xl font-bold text-gray-900">Orders</h1>
+            <button
+              onClick={handleLogout}
+              className="text-gray-600 hover:text-gray-900"
+            >
+              Logout
+            </button>
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 py-6">
+          <div className="text-center py-12 bg-white rounded-lg shadow">
+            <p className="text-gray-500 mb-2">No locations assigned to your account.</p>
+            <p className="text-sm text-gray-400">Please contact your administrator to get access to a restaurant location.</p>
+          </div>
+        </main>
       </div>
     );
   }
