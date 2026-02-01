@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Order {
   id: number;
@@ -27,6 +28,7 @@ interface User {
   name: string;
   email: string;
   is_platform_admin: boolean;
+  is_owner?: boolean;
   locations?: Array<{ id: number; location_name: string }>;
 }
 
@@ -172,8 +174,11 @@ export default function OrdersPage() {
       <div className="min-h-screen bg-gray-100">
         <header className="bg-white shadow">
           <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-xl font-bold text-gray-900">Orders</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              {user?.is_owner ? 'Owner Dashboard' : 'Orders'}
+            </h1>
             <button
+              type="button"
               onClick={handleLogout}
               className="text-gray-600 hover:text-gray-900"
             >
@@ -181,10 +186,61 @@ export default function OrdersPage() {
             </button>
           </div>
         </header>
+        {/* Navigation for Owners */}
+        {user?.is_owner && (
+          <nav className="bg-white border-b">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="flex space-x-8">
+                <Link
+                  href="/dashboard"
+                  className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+                >
+                  Overview
+                </Link>
+                <Link
+                  href="/orders"
+                  className="border-b-2 border-blue-600 text-blue-600 py-4 px-1 text-sm font-medium"
+                >
+                  Orders
+                </Link>
+                <Link
+                  href="/dashboard/staff"
+                  className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+                >
+                  Staff
+                </Link>
+                <Link
+                  href="/menu"
+                  className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+                >
+                  Menu
+                </Link>
+                <Link
+                  href="/dashboard/analytics"
+                  className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+                >
+                  Analytics
+                </Link>
+              </div>
+            </div>
+          </nav>
+        )}
         <main className="max-w-7xl mx-auto px-4 py-6">
           <div className="text-center py-12 bg-white rounded-lg shadow">
             <p className="text-gray-500 mb-2">No locations assigned to your account.</p>
-            <p className="text-sm text-gray-400">Please contact your administrator to get access to a restaurant location.</p>
+            <p className="text-sm text-gray-400">
+              {user?.is_owner
+                ? 'Go to the Overview page to see your restaurants and add staff.'
+                : 'Please contact your administrator to get access to a restaurant location.'}
+            </p>
+            {user?.is_owner && (
+              <Link
+                href="/dashboard"
+                className="mt-4 inline-block bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-700"
+              >
+                Go to Overview
+              </Link>
+            )}
           </div>
         </main>
       </div>
@@ -196,7 +252,9 @@ export default function OrdersPage() {
       {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-900">Orders</h1>
+          <h1 className="text-xl font-bold text-gray-900">
+            {user?.is_owner ? 'Owner Dashboard' : 'Orders'}
+          </h1>
           <div className="flex items-center space-x-4">
             {locations.length > 1 && (
               <select
@@ -212,6 +270,7 @@ export default function OrdersPage() {
               </select>
             )}
             <button
+              type="button"
               onClick={handleLogout}
               className="text-gray-600 hover:text-gray-900"
             >
@@ -220,6 +279,46 @@ export default function OrdersPage() {
           </div>
         </div>
       </header>
+
+      {/* Navigation for Owners */}
+      {user?.is_owner && (
+        <nav className="bg-white border-b">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex space-x-8">
+              <Link
+                href="/dashboard"
+                className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+              >
+                Overview
+              </Link>
+              <Link
+                href="/orders"
+                className="border-b-2 border-blue-600 text-blue-600 py-4 px-1 text-sm font-medium"
+              >
+                Orders
+              </Link>
+              <Link
+                href="/dashboard/staff"
+                className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+              >
+                Staff
+              </Link>
+              <Link
+                href="/menu"
+                className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+              >
+                Menu
+              </Link>
+              <Link
+                href="/dashboard/analytics"
+                className="border-b-2 border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 py-4 px-1 text-sm font-medium"
+              >
+                Analytics
+              </Link>
+            </div>
+          </div>
+        </nav>
+      )}
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-6">
