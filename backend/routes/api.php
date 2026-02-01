@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\Customer\PaymentController;
 use App\Http\Controllers\Api\Dashboard\AnalyticsController;
 use App\Http\Controllers\Api\Dashboard\MenuController;
 use App\Http\Controllers\Api\Dashboard\OrderController as DashboardOrderController;
+use App\Http\Controllers\Api\Dashboard\OwnerController;
+use App\Http\Controllers\Api\Dashboard\StaffController;
 use App\Http\Controllers\Api\Admin\AdminController;
 use App\Http\Controllers\Api\WebhookController;
 use Illuminate\Support\Facades\Route;
@@ -70,6 +72,17 @@ Route::middleware('auth:sanctum')->prefix('dashboard')->group(function () {
     // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index']);
     Route::get('/analytics/summary', [AnalyticsController::class, 'summary']);
+
+    // Owner dashboard
+    Route::get('/owner/overview', [OwnerController::class, 'overview']);
+    Route::get('/owner/analytics', [OwnerController::class, 'analytics']);
+    Route::get('/owner/locations', [OwnerController::class, 'locations']);
+
+    // Staff management
+    Route::get('/staff', [StaffController::class, 'index']);
+    Route::post('/staff', [StaffController::class, 'store']);
+    Route::patch('/staff/{assignmentId}', [StaffController::class, 'update']);
+    Route::delete('/staff/{assignmentId}', [StaffController::class, 'destroy']);
 });
 
 // Admin endpoints (authenticated + platform admin)
